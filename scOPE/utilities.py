@@ -1,6 +1,8 @@
 import requests
 import pandas as pd
 import numpy as np
+import pickle
+
 
 def fetch_ensembl_ids(gene_names):
     '''
@@ -102,5 +104,26 @@ def sample_rna_seq_data(normalized_scaled_bulk_rna, used_sample_ids, num_samples
     
     return sampled_rna_seq_data
 
+
+# Function to load a model from a pickle file
+def load_model(directory_name, gene_name):
+    model_filename = directory_name + f"{gene_name}_logistic_ridge_model.pkl"
+    with open(model_filename, 'rb') as f:
+        model = pickle.load(f)
+    return model
+
+
+# Functions to extract the necessary information from gene dictionaries
+def get_rna_seq_data(gene_data, gene_name):
+    gene_info = gene_data[gene_name]
+    mut_data = gene_info['mut_sequencing_data']
+    non_mut_data = gene_info['non-mut_sequencing_data']
+    
+    X = pd.concat([mut_data, non_mut_data], ignore_index=True)
+    y_mut = np.ones(mut_data.shape[0])
+    y_non_mut = np.zeros(non_mut_data.shape[0])
+    y = np.concatenate([y_mut, y_non_mut])
+    
+    return X, y
 
 
