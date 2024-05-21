@@ -1,6 +1,7 @@
 # Import modules
 import pandas as pd
 from sklearn.preprocessing import Normalizer, StandardScaler
+import scanpy as sc
 
 
 # Define functions
@@ -24,24 +25,55 @@ def preprocess_bulk_RNA(bulk_transcript_df, normalize=True, scale=True):
     '''
     
     '''
+    if normalize == False and scale == False:
+        print('Function aborting, all options set to False.')
+        return None
+    
+    out_df = bulk_transcript_df
+    #print(out_df)
+    
     if normalize == True:
         print('Normalizing data..')
         # Normalize data
         normalizer = Normalizer()
-        df_normalized = normalizer.fit_transform(bulk_transcript_df)
+        out_df = normalizer.fit_transform(out_df)
 
     if scale == True:
         print('Scaling data..')
         # Scale data
         scaler = StandardScaler()
-        df_scaled = scaler.fit_transform(bulk_transcript_df)
+        out_df = scaler.fit_transform(out_df)
 
     # Optionally convert back to DataFrame
-    df_scaled = pd.DataFrame(df_scaled, index=df_transposed.index, columns=df_transposed.columns)
+    preprocessed_df = pd.DataFrame(out_df, index=bulk_transcript_df.index, columns=bulk_transcript_df.columns)
     
-    return df_scaled
-
- 
+    return preprocessed_df
 
 
+def preprocess_single_cell_RNA(adata, normalize=True, scale=True):
+    '''
     
+    '''
+    if normalize == False and scale == False:
+        print('Function aborting, all options set to False.')
+        return None
+    
+    # Assuming 'adata' is your AnnData object loaded with scRNA-seq data
+    if normalize == True:
+        print('Normalizing total counts..')
+        sc.pp.normalize_total(adata, target_sum=1e4)  # Normalize total counts to 10,000 per cell
+        
+        print('Logarithmizing the data..')
+        sc.pp.log1p(adata)  # Logarithmize the data
+    
+    if scale == True:
+        print('Scaling data..')
+        sc.pp.scale(adata)  # Scale to zero mean and unit variance
+        
+    return adata
+
+
+
+
+
+
