@@ -16,11 +16,12 @@ def tsv_to_df(file_path, delimiter='\t', index_col=None):
     Returns Pandas dataframe of tsv file contents
     '''
     
+    #dataframe = pd.read_csv(file_path, delimiter=delimiter, index_col=index_col, quotechar='"', quoting=3)
     dataframe = pd.read_csv(file_path, delimiter=delimiter, index_col=index_col)
     
     return dataframe
     
-    
+
 def preprocess_bulk_RNA(bulk_transcript_df, normalize=True, scale=True):
     '''
     
