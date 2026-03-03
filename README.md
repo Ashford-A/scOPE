@@ -1,5 +1,7 @@
 # scOPE
 
+(single-cell Oncological Prediction Explorer)
+
 <picture>
   <source media="(prefers-color-scheme: dark)"
           srcset="https://raw.githubusercontent.com/Ashford-A/scOPE/main/assets/figures/scOPE_overview_dark.png">
