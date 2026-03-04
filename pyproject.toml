@@ -100,10 +100,11 @@ target-version = "py39"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
 ignore = [
-    "E501",   # line length — handled by black
-    "N803",   # argument name should be lowercase (we use X, Z, V, U, S)
-    "N806",   # variable in function should be lowercase (same reason)
-    "B008",   # do not perform function calls in default arguments
+    "E501",
+    "N803",
+    "N806",
+    "N802",
+    "B008",
 ]
 
 [tool.ruff.lint.per-file-ignores]
