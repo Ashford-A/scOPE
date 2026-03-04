@@ -14,6 +14,7 @@ Typical usage
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Union
 
 import anndata as ad
 import numpy as np
@@ -30,7 +31,7 @@ from scope.visualization.embeddings import compute_umap, plot_mutation_probabili
 
 log = get_logger(__name__)
 
-PathLike = str | Path
+PathLike = Union[str, Path]  # noqa: UP007
 
 
 class SingleCellPipeline(BaseEstimator):

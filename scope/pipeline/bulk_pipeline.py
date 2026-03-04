@@ -19,6 +19,7 @@ from __future__ import annotations
 import functools
 import pickle
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -34,7 +35,7 @@ from scope.utils.logging import get_logger
 
 log = get_logger(__name__)
 
-PathLike = str | Path
+PathLike = Union[str, Path]  # noqa: UP007
 
 
 class BulkPipeline(BaseEstimator):
