@@ -30,7 +30,7 @@ from scope.visualization.embeddings import compute_umap, plot_mutation_probabili
 
 log = get_logger(__name__)
 
-PathLike = Union[str, Path]
+PathLike = str | Path
 
 
 class SingleCellPipeline(BaseEstimator):
