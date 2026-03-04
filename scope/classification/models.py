@@ -7,8 +7,6 @@ can be used interchangeably in :class:`~scope.classification.base.PerMutationCla
 
 from __future__ import annotations
 
-from typing import Literal
-
 import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import (
@@ -37,8 +35,8 @@ class LogisticMutationClassifier(BaseMutationClassifier):
     ----------
     C:
         Inverse regularisation strength.  Smaller = stronger regularisation.
-    penalty:
-        ``"l1"``, ``"l2"``, or ``"elasticnet"``.
+    l1_ratio:
+        Mixing parameter: 0.0 = L2, 1.0 = L1, between = ElasticNet (requires solver="saga").
     solver:
         Solver (must be compatible with *penalty*).
     max_iter:
@@ -52,30 +50,28 @@ class LogisticMutationClassifier(BaseMutationClassifier):
     def __init__(
         self,
         C: float = 1.0,
-        penalty: Literal["l1", "l2", "elasticnet"] = "l2",
+        l1_ratio: float = 0.0,  # 0.0 = L2, 1.0 = L1, (0,1) = ElasticNet
         solver: str = "lbfgs",
         max_iter: int = 1000,
         class_weight: str | None = "balanced",
         random_state: int = 42,
     ):
         self.C = C
-        self.penalty = penalty
+        self.l1_ratio = l1_ratio
         self.solver = solver
         self.max_iter = max_iter
         self.class_weight = class_weight
         self.random_state = random_state
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> LogisticMutationClassifier:
-        self._model = LogisticRegression(
-            C=self.C,
-            penalty=self.penalty,
-            solver=self.solver,
-            max_iter=self.max_iter,
-            class_weight=self.class_weight,
-            random_state=self.random_state,
-        )
-        self._model.fit(Z, y)
-        return self
+    # Replace the fit() instantiation:
+    self._model = LogisticRegression(
+        C=self.C,
+        l1_ratio=self.l1_ratio,
+        solver=self.solver,
+        max_iter=self.max_iter,
+        class_weight=self.class_weight,
+        random_state=self.random_state,
+    )
 
     def predict_proba(self, Z: np.ndarray) -> np.ndarray:
         return self._model.predict_proba(Z)
