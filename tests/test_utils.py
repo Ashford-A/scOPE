@@ -1,22 +1,21 @@
 """Tests for utility modules."""
 
 import numpy as np
-import pandas as pd
 import pytest
 from anndata import AnnData
 
+from scope.utils.gene_utils import (
+    align_gene_order,
+    filter_variable_genes,
+    get_shared_genes,
+    subset_to_shared_genes,
+)
 from scope.utils.validation import (
     check_adata,
     check_gene_overlap,
     check_is_fitted,
     check_mutation_labels,
     check_nonneg,
-)
-from scope.utils.gene_utils import (
-    align_gene_order,
-    filter_variable_genes,
-    get_shared_genes,
-    subset_to_shared_genes,
 )
 
 

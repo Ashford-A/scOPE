@@ -10,7 +10,7 @@ Projection: Z_sc = A'_sc · H^+   (Moore-Penrose pseudoinverse of H)
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 from anndata import AnnData
@@ -76,7 +76,7 @@ class NMFDecomposition(BaseDecomposition):
         alpha_W: float = 0.0,
         alpha_H: float = 0.0,
         shift_negative: bool = True,
-        layer: Optional[str] = None,
+        layer: str | None = None,
         obsm_key: str = "X_nmf",
     ):
         super().__init__(n_components=n_components, layer=layer)
@@ -92,7 +92,7 @@ class NMFDecomposition(BaseDecomposition):
         self.shift_negative = shift_negative
         self.obsm_key = obsm_key
 
-    def fit(self, adata: AnnData, y=None) -> "NMFDecomposition":
+    def fit(self, adata: AnnData, y=None) -> NMFDecomposition:
         X = self._get_X(adata)
         X = self._ensure_nonneg(X)
 

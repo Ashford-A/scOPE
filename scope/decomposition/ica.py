@@ -6,7 +6,7 @@ non-Gaussian expression programs that SVD/PCA might miss.
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 from anndata import AnnData
@@ -58,7 +58,7 @@ class ICADecomposition(BaseDecomposition):
         tol: float = 1e-4,
         whiten: bool = True,
         random_state: int = 42,
-        layer: Optional[str] = None,
+        layer: str | None = None,
         obsm_key: str = "X_ica",
     ):
         super().__init__(n_components=n_components, layer=layer)
@@ -70,7 +70,7 @@ class ICADecomposition(BaseDecomposition):
         self.random_state = random_state
         self.obsm_key = obsm_key
 
-    def fit(self, adata: AnnData, y=None) -> "ICADecomposition":
+    def fit(self, adata: AnnData, y=None) -> ICADecomposition:
         X = self._get_X(adata)
         self._model = FastICA(
             n_components=self.n_components,

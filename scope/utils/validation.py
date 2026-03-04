@@ -6,7 +6,7 @@ consistent, user-friendly error messages everywhere.
 
 from __future__ import annotations
 
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
@@ -71,7 +71,7 @@ def check_adata(
 
 def check_mutation_labels(
     labels: object,
-    adata: Optional[AnnData] = None,
+    adata: AnnData | None = None,
     min_mutations: int = 1,
     name: str = "mutation_labels",
 ) -> pd.DataFrame:
@@ -105,7 +105,7 @@ def check_mutation_labels(
     # Check binary-ish (allow NaN, warn)
     unique_vals = set(labels.values.ravel())
     unique_vals.discard(np.nan)
-    non_binary = unique_vals - {0, 1, 0.0, 1.0}
+    non_binary = unique_vals - {0, 1}
     if non_binary:
         import warnings
         warnings.warn(

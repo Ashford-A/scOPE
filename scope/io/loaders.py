@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as sp
 from anndata import AnnData
 
 from scope.utils.logging import get_logger
@@ -25,7 +23,7 @@ PathLike = Union[str, Path]
 
 def load(
     path: PathLike,
-    fmt: Optional[str] = None,
+    fmt: str | None = None,
     **kwargs,
 ) -> AnnData:
     """Load expression data from *path* and return an :class:`anndata.AnnData`.
@@ -87,7 +85,7 @@ def _infer_format(path: Path) -> str:
 # ---------------------------------------------------------------------------
 
 
-def load_h5ad(path: PathLike, backed: Optional[str] = None) -> AnnData:
+def load_h5ad(path: PathLike, backed: str | None = None) -> AnnData:
     """Load an ``h5ad`` file.
 
     Parameters
@@ -106,9 +104,9 @@ def load_h5ad(path: PathLike, backed: Optional[str] = None) -> AnnData:
 
 def load_delimited(
     path: PathLike,
-    sep: Optional[str] = None,
+    sep: str | None = None,
     genes_as_columns: bool = True,
-    obs_label_col: Optional[str] = None,
+    obs_label_col: str | None = None,
 ) -> AnnData:
     """Load a CSV/TSV expression matrix.
 
@@ -168,7 +166,7 @@ def load_10x_mtx(
     return adata
 
 
-def load_10x_h5(path: PathLike, genome: Optional[str] = None) -> AnnData:
+def load_10x_h5(path: PathLike, genome: str | None = None) -> AnnData:
     """Load a 10x Genomics HDF5 file (``.h5``).
 
     Parameters

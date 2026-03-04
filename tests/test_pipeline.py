@@ -46,7 +46,6 @@ class TestSingleCellPipeline:
         return pipe
 
     def test_full_transform(self, fitted_bulk_pipe, adata_bulk, adata_sc):
-        from scope.preprocessing.bulk import BulkPreprocessor
         adata_bulk_pp = fitted_bulk_pipe.preprocessor_.transform(adata_bulk)
 
         sc_pipe = SingleCellPipeline(

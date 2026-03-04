@@ -13,11 +13,10 @@ Typical usage
 
 from __future__ import annotations
 
-from typing import List, Optional, Union
 from pathlib import Path
+from typing import Union
 
 import numpy as np
-import pandas as pd
 from anndata import AnnData
 from sklearn.base import BaseEstimator
 
@@ -69,8 +68,8 @@ class SingleCellPipeline(BaseEstimator):
         sc_min_genes: int = 200,
         sc_target_sum: float = 1e4,
         alignment_method: str = "z_score_bulk",
-        clip_percentile: Optional[float] = 99.0,
-        layer: Optional[str] = None,
+        clip_percentile: float | None = 99.0,
+        layer: str | None = None,
         add_to_obs: bool = True,
     ):
         self.bulk_pipeline = bulk_pipeline
@@ -84,7 +83,7 @@ class SingleCellPipeline(BaseEstimator):
         self.add_to_obs = add_to_obs
 
     # ------------------------------------------------------------------
-    def fit(self, adata_bulk_pp: AnnData, adata_sc: AnnData) -> "SingleCellPipeline":
+    def fit(self, adata_bulk_pp: AnnData, adata_sc: AnnData) -> SingleCellPipeline:
         """Fit sc preprocessing and bulk–sc aligner.
 
         Parameters

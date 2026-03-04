@@ -7,7 +7,7 @@ identically to single-cell data later.
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 import scipy.sparse as sp
@@ -58,9 +58,9 @@ class BulkNormalizer(BaseEstimator, TransformerMixin):
         method: NormMethod = "cpm",
         log1p: bool = True,
         target_sum: float = 1e6,
-        gene_lengths: Optional[np.ndarray] = None,
-        layer_in: Optional[str] = None,
-        layer_out: Optional[str] = None,
+        gene_lengths: np.ndarray | None = None,
+        layer_in: str | None = None,
+        layer_out: str | None = None,
     ):
         self.method = method
         self.log1p = log1p
@@ -70,7 +70,7 @@ class BulkNormalizer(BaseEstimator, TransformerMixin):
         self.layer_out = layer_out
 
     # ------------------------------------------------------------------
-    def fit(self, adata: AnnData, y=None) -> "BulkNormalizer":
+    def fit(self, adata: AnnData, y=None) -> BulkNormalizer:
         """Learn normalisation parameters from *adata*.
 
         For ``"median_ratio"`` and ``"tmm"`` the reference is computed here.
@@ -171,7 +171,7 @@ class BulkNormalizer(BaseEstimator, TransformerMixin):
             # Trim top/bottom 30% by M, 5% by A
             m_lo, m_hi = np.quantile(M, [0.30, 0.70])
             a_lo, a_hi = np.quantile(A, [0.05, 0.95])
-            keep = (M >= m_lo) & (M <= m_hi) & (A >= a_lo) & (A <= a_hi)
+            keep = (m_lo <= M) & (m_hi >= M) & (a_lo <= A) & (a_hi >= A)
             if keep.sum() < 5:
                 continue
             w = 1.0 / (1 / row[mask][keep] + 1 / ref[mask][keep])
@@ -206,15 +206,15 @@ class BulkScaler(BaseEstimator, TransformerMixin):
         self,
         center: bool = True,
         scale: bool = True,
-        layer_in: Optional[str] = None,
-        layer_out: Optional[str] = None,
+        layer_in: str | None = None,
+        layer_out: str | None = None,
     ):
         self.center = center
         self.scale = scale
         self.layer_in = layer_in
         self.layer_out = layer_out
 
-    def fit(self, adata: AnnData, y=None) -> "BulkScaler":
+    def fit(self, adata: AnnData, y=None) -> BulkScaler:
         X = self._get_X(adata)
         self._scaler = StandardScaler(with_mean=self.center, with_std=self.scale)
         self._scaler.fit(X)
@@ -285,9 +285,9 @@ class BulkPreprocessor(BaseEstimator, TransformerMixin):
         log1p: bool = True,
         center: bool = True,
         scale: bool = True,
-        gene_lengths: Optional[np.ndarray] = None,
-        layer_in: Optional[str] = None,
-        layer_out: Optional[str] = None,
+        gene_lengths: np.ndarray | None = None,
+        layer_in: str | None = None,
+        layer_out: str | None = None,
     ):
         self.norm_method = norm_method
         self.log1p = log1p
@@ -297,7 +297,7 @@ class BulkPreprocessor(BaseEstimator, TransformerMixin):
         self.layer_in = layer_in
         self.layer_out = layer_out
 
-    def fit(self, adata: AnnData, y=None) -> "BulkPreprocessor":
+    def fit(self, adata: AnnData, y=None) -> BulkPreprocessor:
         self.normalizer_ = BulkNormalizer(
             method=self.norm_method,
             log1p=self.log1p,

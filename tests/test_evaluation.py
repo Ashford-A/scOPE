@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from scope.classification.models import LogisticMutationClassifier
 from scope.evaluation.metrics import (
     cross_validate_classifiers,
     evaluate_all,
@@ -11,7 +12,6 @@ from scope.evaluation.metrics import (
     pr_curve_data,
     roc_curve_data,
 )
-from scope.classification.models import LogisticMutationClassifier
 
 
 @pytest.fixture()

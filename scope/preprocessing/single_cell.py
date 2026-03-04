@@ -7,7 +7,7 @@ transformations can be applied consistently across datasets.
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 import scipy.sparse as sp
@@ -62,13 +62,13 @@ class SingleCellPreprocessor(BaseEstimator, TransformerMixin):
         filter_strategy: FilterStrategy = "both",
         min_counts: int = 200,
         min_genes: int = 200,
-        max_counts: Optional[int] = None,
+        max_counts: int | None = None,
         target_sum: float = 1e4,
         log1p: bool = True,
         scale: bool = False,
-        max_value: Optional[float] = 10.0,
-        layer_in: Optional[str] = None,
-        layer_out: Optional[str] = None,
+        max_value: float | None = 10.0,
+        layer_in: str | None = None,
+        layer_out: str | None = None,
     ):
         self.filter_strategy = filter_strategy
         self.min_counts = min_counts
@@ -82,7 +82,7 @@ class SingleCellPreprocessor(BaseEstimator, TransformerMixin):
         self.layer_out = layer_out
 
     # ------------------------------------------------------------------
-    def fit(self, adata: AnnData, y=None) -> "SingleCellPreprocessor":
+    def fit(self, adata: AnnData, y=None) -> SingleCellPreprocessor:
         """Learn gene-wise statistics (mean, std) if scaling is requested."""
         if self.scale:
             filtered = self._apply_filter(adata)

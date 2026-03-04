@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 from anndata import AnnData
 from sklearn.decomposition import PCA
@@ -47,7 +45,7 @@ class PCADecomposition(BaseDecomposition):
         svd_solver: str = "auto",
         whiten: bool = False,
         random_state: int = 42,
-        layer: Optional[str] = None,
+        layer: str | None = None,
         obsm_key: str = "X_pca",
     ):
         super().__init__(n_components=n_components, layer=layer)
@@ -56,7 +54,7 @@ class PCADecomposition(BaseDecomposition):
         self.random_state = random_state
         self.obsm_key = obsm_key
 
-    def fit(self, adata: AnnData, y=None) -> "PCADecomposition":
+    def fit(self, adata: AnnData, y=None) -> PCADecomposition:
         X = self._get_X(adata)
         self._model = PCA(
             n_components=self.n_components,

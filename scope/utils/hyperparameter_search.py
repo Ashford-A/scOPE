@@ -8,9 +8,9 @@ to write boilerplate loops.
 from __future__ import annotations
 
 import itertools
-from typing import Any, Dict, Iterable, List, Optional
+from collections.abc import Iterable
+from typing import Any
 
-import numpy as np
 import pandas as pd
 from anndata import AnnData
 
@@ -24,7 +24,7 @@ log = get_logger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def _product_grid(param_grid: Dict[str, List[Any]]) -> List[Dict[str, Any]]:
+def _product_grid(param_grid: dict[str, list[Any]]) -> list[dict[str, Any]]:
     """Expand a parameter grid dict into a list of individual param dicts."""
     keys = list(param_grid.keys())
     values = list(param_grid.values())
@@ -42,10 +42,10 @@ def sweep_n_components(
     n_components_list: Iterable[int],
     decomposition: str = "svd",
     classifier: str = "logistic",
-    classifier_kwargs: Optional[dict] = None,
+    classifier_kwargs: dict | None = None,
     cv: int = 5,
     norm_method: str = "cpm",
-    layer: Optional[str] = None,
+    layer: str | None = None,
 ) -> pd.DataFrame:
     """Sweep over latent dimensionalities and report CV performance.
 
@@ -106,10 +106,10 @@ def sweep_n_components(
 def grid_search_pipeline(
     adata_bulk: AnnData,
     mutation_labels: pd.DataFrame,
-    param_grid: Dict[str, List[Any]],
+    param_grid: dict[str, list[Any]],
     cv: int = 5,
-    scoring_mutation: Optional[str] = None,
-    layer: Optional[str] = None,
+    scoring_mutation: str | None = None,
+    layer: str | None = None,
 ) -> pd.DataFrame:
     """Exhaustive grid search over scOPE ``BulkPipeline`` hyperparameters.
 
@@ -170,7 +170,7 @@ def grid_search_pipeline(
 
 def summarise_grid_search(
     results: pd.DataFrame,
-    param_cols: Optional[List[str]] = None,
+    param_cols: list[str] | None = None,
     metric: str = "auroc",
 ) -> pd.DataFrame:
     """Aggregate grid-search results to mean ± std per parameter combination.

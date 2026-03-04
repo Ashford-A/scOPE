@@ -7,7 +7,7 @@ strategies for aligning marginal distributions gene by gene.
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 import scipy.sparse as sp
@@ -62,10 +62,10 @@ class BulkSCAligner(BaseEstimator, TransformerMixin):
         self,
         method: AlignMethod = "z_score_bulk",
         n_quantiles: int = 1000,
-        clip_percentile: Optional[float] = 99.0,
-        layer_bulk: Optional[str] = None,
-        layer_sc_in: Optional[str] = None,
-        layer_sc_out: Optional[str] = None,
+        clip_percentile: float | None = 99.0,
+        layer_bulk: str | None = None,
+        layer_sc_in: str | None = None,
+        layer_sc_out: str | None = None,
     ):
         self.method = method
         self.n_quantiles = n_quantiles
@@ -75,7 +75,7 @@ class BulkSCAligner(BaseEstimator, TransformerMixin):
         self.layer_sc_out = layer_sc_out
 
     # ------------------------------------------------------------------
-    def fit(self, adata_bulk: AnnData, y=None) -> "BulkSCAligner":
+    def fit(self, adata_bulk: AnnData, y=None) -> BulkSCAligner:
         """Learn gene-wise statistics from *adata_bulk*.
 
         Parameters
@@ -163,7 +163,7 @@ class BulkSCAligner(BaseEstimator, TransformerMixin):
         return out
 
     @staticmethod
-    def _get_X(adata: AnnData, layer: Optional[str]) -> np.ndarray:
+    def _get_X(adata: AnnData, layer: str | None) -> np.ndarray:
         X = adata.layers[layer] if layer else adata.X
         if sp.issparse(X):
             X = X.toarray()

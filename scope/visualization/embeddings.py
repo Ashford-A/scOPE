@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Sequence, Tuple, Union
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from anndata import AnnData
 from matplotlib.axes import Axes
-from matplotlib.colors import Normalize
 from matplotlib.figure import Figure
 
 from scope.utils.logging import get_logger
@@ -126,18 +123,18 @@ def compute_tsne(
 
 def plot_embedding(
     adata: AnnData,
-    color_key: Optional[str] = None,
+    color_key: str | None = None,
     obsm_key: str = "X_umap",
-    ax: Optional[Axes] = None,
-    figsize: Tuple[float, float] = (6.0, 5.0),
+    ax: Axes | None = None,
+    figsize: tuple[float, float] = (6.0, 5.0),
     cmap: str = "viridis",
     point_size: float = 3.0,
     alpha: float = 0.7,
-    title: Optional[str] = None,
-    colorbar_label: Optional[str] = None,
-    vmin: Optional[float] = None,
-    vmax: Optional[float] = None,
-) -> Tuple[Figure, Axes]:
+    title: str | None = None,
+    colorbar_label: str | None = None,
+    vmin: float | None = None,
+    vmax: float | None = None,
+) -> tuple[Figure, Axes]:
     """Scatter plot of a 2-D embedding, coloured by a scalar or categorical key.
 
     Parameters
@@ -224,9 +221,9 @@ def plot_embedding(
 
 def plot_mutation_probabilities(
     adata: AnnData,
-    mutations: Optional[List[str]] = None,
+    mutations: list[str] | None = None,
     obsm_key: str = "X_umap",
-    figsize_per_panel: Tuple[float, float] = (4.5, 4.0),
+    figsize_per_panel: tuple[float, float] = (4.5, 4.0),
     cmap: str = "RdBu_r",
     vmin: float = 0.0,
     vmax: float = 1.0,
@@ -306,10 +303,10 @@ def plot_mutation_probabilities(
 
 def plot_scree(
     scree_data: dict,
-    ax: Optional[Axes] = None,
-    figsize: Tuple[float, float] = (7.0, 4.0),
-    max_components: Optional[int] = None,
-) -> Tuple[Figure, Axes]:
+    ax: Axes | None = None,
+    figsize: tuple[float, float] = (7.0, 4.0),
+    max_components: int | None = None,
+) -> tuple[Figure, Axes]:
     """Plot singular values and cumulative explained variance.
 
     Parameters
@@ -361,12 +358,12 @@ def plot_scree(
 def plot_mutation_heatmap(
     adata: AnnData,
     cluster_key: str = "leiden",
-    mutations: Optional[List[str]] = None,
-    figsize: Tuple[float, float] = (8.0, 5.0),
+    mutations: list[str] | None = None,
+    figsize: tuple[float, float] = (8.0, 5.0),
     cmap: str = "YlOrRd",
     vmin: float = 0.0,
     vmax: float = 1.0,
-) -> Tuple[Figure, Axes]:
+) -> tuple[Figure, Axes]:
     """Heatmap: mean mutation probability per cell cluster.
 
     Parameters

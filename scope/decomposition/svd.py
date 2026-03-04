@@ -16,7 +16,7 @@ Single-cell projection
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 from anndata import AnnData
@@ -69,7 +69,7 @@ class SVDDecomposition(BaseDecomposition):
         scale_by_singular_values: bool = True,
         n_iter: int = 4,
         random_state: int = 42,
-        layer: Optional[str] = None,
+        layer: str | None = None,
         obsm_key: str = "X_svd",
     ):
         super().__init__(n_components=n_components, layer=layer)
@@ -80,7 +80,7 @@ class SVDDecomposition(BaseDecomposition):
         self.obsm_key = obsm_key
 
     # ------------------------------------------------------------------
-    def fit(self, adata: AnnData, y=None) -> "SVDDecomposition":
+    def fit(self, adata: AnnData, y=None) -> SVDDecomposition:
         """Decompose bulk expression matrix and store V and Σ.
 
         Parameters
@@ -163,7 +163,7 @@ class SVDDecomposition(BaseDecomposition):
         adata.obsm[self.obsm_key] = Z.astype(np.float32)
         return adata
 
-    def explained_variance_ratio(self) -> Optional[np.ndarray]:
+    def explained_variance_ratio(self) -> np.ndarray | None:
         """Fraction of total variance explained by each component."""
         return self._explained_variance_ratio_
 

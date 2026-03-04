@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import StratifiedKFold, cross_validate
-from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from scope.utils.logging import get_logger
@@ -25,7 +23,7 @@ class BaseMutationClassifier(ABC, BaseEstimator, ClassifierMixin):
     """
 
     @abstractmethod
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "BaseMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> BaseMutationClassifier:
         """Train on latent embedding *Z* with binary labels *y*."""
 
     @abstractmethod
@@ -66,10 +64,10 @@ class PerMutationClassifierSet:
         self.classifier_factory = classifier_factory
         self.min_positive_frac = min_positive_frac
         self.scale_features = scale_features
-        self.classifiers_: Dict[str, BaseMutationClassifier] = {}
-        self.skipped_: List[str] = []
+        self.classifiers_: dict[str, BaseMutationClassifier] = {}
+        self.skipped_: list[str] = []
 
-    def fit(self, Z: np.ndarray, labels: pd.DataFrame) -> "PerMutationClassifierSet":
+    def fit(self, Z: np.ndarray, labels: pd.DataFrame) -> PerMutationClassifierSet:
         """Train one classifier per column of *labels*.
 
         Parameters
@@ -114,7 +112,7 @@ class PerMutationClassifierSet:
         labels: pd.DataFrame,
         cv: int = 5,
         scoring: str = "roc_auc",
-    ) -> Dict[str, dict]:
+    ) -> dict[str, dict]:
         """Run stratified k-fold CV for each mutation.
 
         Returns

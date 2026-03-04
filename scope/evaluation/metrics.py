@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import (
@@ -29,7 +27,7 @@ def evaluate_classifier(
     y_true: np.ndarray,
     y_prob: np.ndarray,
     mutation_name: str = "mutation",
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Compute a comprehensive set of binary classification metrics.
 
     Parameters
@@ -142,7 +140,7 @@ def cross_validate_classifiers(
 def roc_curve_data(
     y_true: np.ndarray,
     y_prob: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray, float]:
+) -> tuple[np.ndarray, np.ndarray, float]:
     """Return (fpr, tpr, auroc) for a ROC curve."""
     fpr, tpr, _ = roc_curve(y_true, y_prob)
     auroc = roc_auc_score(y_true, y_prob)
@@ -152,7 +150,7 @@ def roc_curve_data(
 def pr_curve_data(
     y_true: np.ndarray,
     y_prob: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray, float]:
+) -> tuple[np.ndarray, np.ndarray, float]:
     """Return (precision, recall, auprc) for a PR curve."""
     precision, recall, _ = precision_recall_curve(y_true, y_prob)
     auprc = average_precision_score(y_true, y_prob)

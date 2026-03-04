@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import warnings
-from typing import List, Optional, Sequence, Tuple
+from collections.abc import Sequence
 
 import numpy as np
-import pandas as pd
 from anndata import AnnData
 
 from scope.utils.logging import get_logger
@@ -23,7 +22,7 @@ def get_shared_genes(
     adata_bulk: AnnData,
     adata_sc: AnnData,
     gene_key: str = "gene_names",
-) -> List[str]:
+) -> list[str]:
     """Return the intersection of gene names present in both datasets.
 
     Parameters
@@ -72,7 +71,7 @@ def subset_to_shared_genes(
     adata_sc: AnnData,
     gene_key: str = "gene_names",
     inplace: bool = False,
-) -> Tuple[AnnData, AnnData]:
+) -> tuple[AnnData, AnnData]:
     """Subset both AnnDatas to their shared gene universe.
 
     Parameters
@@ -134,8 +133,8 @@ def align_gene_order(
 def filter_variable_genes(
     adata: AnnData,
     n_top_genes: int = 2000,
-    layer: Optional[str] = None,
-) -> List[str]:
+    layer: str | None = None,
+) -> list[str]:
     """Select highly variable genes by coefficient of variation.
 
     Parameters

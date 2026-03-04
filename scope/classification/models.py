@@ -7,7 +7,7 @@ can be used interchangeably in :class:`~scope.classification.base.PerMutationCla
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
@@ -55,7 +55,7 @@ class LogisticMutationClassifier(BaseMutationClassifier):
         penalty: Literal["l1", "l2", "elasticnet"] = "l2",
         solver: str = "lbfgs",
         max_iter: int = 1000,
-        class_weight: Optional[str] = "balanced",
+        class_weight: str | None = "balanced",
         random_state: int = 42,
     ):
         self.C = C
@@ -65,7 +65,7 @@ class LogisticMutationClassifier(BaseMutationClassifier):
         self.class_weight = class_weight
         self.random_state = random_state
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "LogisticMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> LogisticMutationClassifier:
         self._model = LogisticRegression(
             C=self.C,
             penalty=self.penalty,
@@ -113,9 +113,9 @@ class RandomForestMutationClassifier(BaseMutationClassifier):
     def __init__(
         self,
         n_estimators: int = 300,
-        max_depth: Optional[int] = None,
+        max_depth: int | None = None,
         min_samples_leaf: int = 1,
-        class_weight: Optional[str] = "balanced",
+        class_weight: str | None = "balanced",
         n_jobs: int = -1,
         random_state: int = 42,
     ):
@@ -126,7 +126,7 @@ class RandomForestMutationClassifier(BaseMutationClassifier):
         self.n_jobs = n_jobs
         self.random_state = random_state
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "RandomForestMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> RandomForestMutationClassifier:
         self._model = RandomForestClassifier(
             n_estimators=self.n_estimators,
             max_depth=self.max_depth,
@@ -182,7 +182,7 @@ class GBMMutationClassifier(BaseMutationClassifier):
         self.subsample = subsample
         self.random_state = random_state
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "GBMMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> GBMMutationClassifier:
         self._model = GradientBoostingClassifier(
             n_estimators=self.n_estimators,
             learning_rate=self.learning_rate,
@@ -235,7 +235,7 @@ class XGBMutationClassifier(BaseMutationClassifier):
         learning_rate: float = 0.05,
         subsample: float = 0.8,
         colsample_bytree: float = 0.8,
-        scale_pos_weight: Optional[float] = None,
+        scale_pos_weight: float | None = None,
         n_jobs: int = -1,
         random_state: int = 42,
     ):
@@ -248,7 +248,7 @@ class XGBMutationClassifier(BaseMutationClassifier):
         self.n_jobs = n_jobs
         self.random_state = random_state
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "XGBMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> XGBMutationClassifier:
         try:
             from xgboost import XGBClassifier
         except ImportError as e:
@@ -297,7 +297,7 @@ class LGBMMutationClassifier(BaseMutationClassifier):
         max_depth: int = -1,
         learning_rate: float = 0.05,
         num_leaves: int = 31,
-        class_weight: Optional[str] = "balanced",
+        class_weight: str | None = "balanced",
         n_jobs: int = -1,
         random_state: int = 42,
         verbose: int = -1,
@@ -311,7 +311,7 @@ class LGBMMutationClassifier(BaseMutationClassifier):
         self.random_state = random_state
         self.verbose = verbose
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "LGBMMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> LGBMMutationClassifier:
         try:
             from lightgbm import LGBMClassifier
         except ImportError as e:
@@ -365,7 +365,7 @@ class SVMMutationClassifier(BaseMutationClassifier):
         C: float = 1.0,
         kernel: str = "rbf",
         gamma: str = "scale",
-        class_weight: Optional[str] = "balanced",
+        class_weight: str | None = "balanced",
         cv: int = 5,
         random_state: int = 42,
     ):
@@ -376,7 +376,7 @@ class SVMMutationClassifier(BaseMutationClassifier):
         self.cv = cv
         self.random_state = random_state
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "SVMMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> SVMMutationClassifier:
         base = SVC(
             C=self.C,
             kernel=self.kernel,
@@ -440,7 +440,7 @@ class MLPMutationClassifier(BaseMutationClassifier):
         self.early_stopping = early_stopping
         self.random_state = random_state
 
-    def fit(self, Z: np.ndarray, y: np.ndarray) -> "MLPMutationClassifier":
+    def fit(self, Z: np.ndarray, y: np.ndarray) -> MLPMutationClassifier:
         self._model = MLPClassifier(
             hidden_layer_sizes=self.hidden_layer_sizes,
             activation=self.activation,
