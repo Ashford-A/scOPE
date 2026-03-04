@@ -1,0 +1,31 @@
+# Include everything needed to build and test from the source tarball
+include LICENSE
+include README.md
+include CHANGELOG.md
+include pyproject.toml
+include MANIFEST.in
+
+# Conda recipe
+recursive-include conda-recipe *.yaml *.yml
+
+# Environments
+recursive-include environments *.yml *.yaml
+
+# Example notebooks
+recursive-include notebooks *.ipynb
+
+# Assets (figures used by README)
+recursive-include assets *.png *.svg *.pdf
+
+# Tests
+recursive-include tests *.py
+include tests/conftest.py
+
+# Exclude artefacts that should never be in a source dist
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.so
+global-exclude .DS_Store
+global-exclude *.h5ad
+global-exclude *.pkl
+global-exclude *.joblib

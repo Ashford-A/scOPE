@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "scope-bio"
@@ -76,3 +76,44 @@ profile = "black"
 
 [tool.ruff]
 line-length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short --color=yes"
+filterwarnings = [
+    "error::FutureWarning",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning:anndata",
+    "ignore::DeprecationWarning:scanpy",
+]
+
+[tool.coverage.run]
+source = ["scope"]
+omit = ["tests/*", "scope/__init__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 70
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = [
+    "E501",   # line length — handled by black
+    "N803",   # argument name should be lowercase (we use X, Z, V, U, S)
+    "N806",   # variable in function should be lowercase (same reason)
+    "B008",   # do not perform function calls in default arguments
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]   # allow assert statements in tests
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true
