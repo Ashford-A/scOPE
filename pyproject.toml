@@ -9,7 +9,7 @@ description = "scOPE: single-cell Oncological Prediction Explorer — transfer-l
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
-    { name = "Andrew Ashford", email = "" },
+    { name = "Andrew J. Ashford"},
 ]
 keywords = [
     "single-cell", "RNA-seq", "cancer", "mutation", "transfer-learning",
