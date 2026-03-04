@@ -4,33 +4,85 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 
-**scOPE** is a transfer-learning framework that learns mutation-linked
-expression programs from bulk RNA-seq cohorts and projects them into
-single-cell RNA-seq data to infer per-cell mutation probabilities —
-revealing subclonal evolutionary structure that complements CNV analyses.
+<picture>
+  <source media="(prefers-color-scheme: dark)"
+          srcset="https://raw.githubusercontent.com/Ashford-A/scOPE/main/assets/figures/scOPE_overview_dark.png">
+  <img src="https://raw.githubusercontent.com/Ashford-A/scOPE/main/assets/figures/scOPE_overview_light.png"
+       alt="scOPE transfer-learning method overview"
+       width="100%">
+</picture>
 
 ---
 
-## Workflow overview
+## scOPE workflow (transfer learning from bulk → single-cell)
 
-```
-Bulk RNA-seq  ──► Normalise ──► SVD / NMF / ICA / PCA ──► Train mutation classifiers
-                                        │
-                                        ▼  gene loadings V
-scRNA-seq     ──► Normalise ──► Moment-match to bulk ──► Project (Z_sc = A'·V) ──► Predict P(mut | cell)
-```
+**scOPE is a transfer-learning framework that uses *bulk RNA-seq cohorts with known mutation status* to learn a compact, biologically meaningful latent space, then projects *single-cell RNA-seq* into that same space to predict the probability that **specific cancer-associated gene mutations** are present in individual cells. This provides mutation-informed subclonal structure that can complement CNV methods and increase subclonal granularity.
 
-**Phase 1** (bulk):
-1. Normalise bulk counts (CPM / TPM / median-ratio / TMM).
-2. Centre and scale gene-wise.
-3. Decompose with SVD (default), NMF, ICA, or PCA.
-4. Train per-mutation classifiers (logistic, random forest, GBM, XGBoost, LightGBM, SVM, MLP) on latent coordinates.
+### Overview
 
-**Phase 2** (single cell):
-1. QC-filter and normalise sc counts.
-2. Align sc distribution to bulk (z-score / moment-matching / quantile).
-3. Project cells into the bulk latent space using stored gene loadings V.
-4. Apply trained classifiers → per-cell mutation probability columns in `adata.obs`.
+scOPE proceeds in two phases:
+
+### 1) Learn latent factors from bulk RNA-seq and train mutation classifiers (Panels a–c)
+
+- **i. Bulk expression matrix**  
+  Construct a bulk cohort expression matrix **A_bulk** (rows = patient samples, columns = genes).  
+  The bulk matrix is **normalized / centered / scaled** to ensure comparable gene-wise signal.
+
+- **ii. Latent feature mapping via SVD**  
+  Decompose the normalized bulk matrix using SVD:
+
+  <p align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)"
+              srcset="https://latex.codecogs.com/svg.image?\color{white}{A_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}V^{\top}}">
+      <img src="https://latex.codecogs.com/svg.image?A_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}V^{\top}"
+           alt="A_bulk = U_bulk Σ_bulk V^T">
+    </picture>
+  </p>
+
+  - **U_bulk**: sample scores (rows = patients, columns = latent factors)  
+  - **Σ_bulk**: diagonal matrix of singular values  
+  - **V**: gene loadings (rows = genes, columns = latent factors)
+
+  Define the bulk latent representation (patient-by-factor embedding):
+
+  <p align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)"
+              srcset="https://latex.codecogs.com/svg.image?\color{white}{Z_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}}">
+      <img src="https://latex.codecogs.com/svg.image?Z_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}"
+           alt="Z_bulk = U_bulk Σ_bulk">
+    </picture>
+  </p>
+
+- **iii. Train mutation-prediction models in latent space**  
+  For each mutation / gene-of-interest, train a supervised ML model to predict mutation presence **Y** from **Z_bulk**.  
+  This yields one (or multiple) mutation-specific classifiers operating on the learned latent factors.
+
+---
+
+### 2) Project scRNA-seq into the bulk-derived latent space and predict mutations per cell (Panels d–f)
+
+- **i. Single-cell expression matrix**  
+  Construct a single-cell expression matrix **A_sc** (rows = single cells, columns = genes).
+
+- **ii. Normalize scRNA-seq using bulk-derived parameters**  
+  Apply the *same* gene-wise normalization / centering / scaling learned from the bulk cohort to obtain **A′_sc**.  
+  (This alignment step makes the projection comparable across bulk and single-cell.)
+
+- **iii. Project cells into latent space and infer mutation probabilities**  
+  Use the bulk-derived gene loadings **V** to compute the single-cell latent representation:
+
+  <p align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)"
+              srcset="https://latex.codecogs.com/svg.image?\color{white}{Z_{\text{sc}}=A'_{\text{sc}}V}">
+      <img src="https://latex.codecogs.com/svg.image?Z_{\text{sc}}=A'_{\text{sc}}V"
+           alt="Z_sc = A'_sc V">
+    </picture>
+  </p>
+
+  Then apply the trained bulk models to **Z_sc** to predict **per-cell mutation probabilities**, producing mutation-informed cellular maps that can be analyzed alongside expression programs, clusters, and CNV signals.
 
 ---
 
