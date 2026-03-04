@@ -1,0 +1,35 @@
+name: scope-dev
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.10
+  - pip
+
+  # Core scientific stack
+  - numpy>=1.24
+  - scipy>=1.10
+  - pandas>=1.5
+  - scikit-learn>=1.3
+
+  # Single-cell ecosystem
+  - anndata>=0.9
+  - scanpy>=1.9
+
+  # Visualisation
+  - matplotlib>=3.6
+  - seaborn>=0.12
+
+  # Development tools
+  - pytest
+  - pytest-cov
+  - black
+  - isort
+  - ruff
+  - mypy
+  - jupyterlab
+  - ipykernel
+
+  - pip:
+    - scope-bio[full]          # includes xgboost, lightgbm, umap-learn, shap
