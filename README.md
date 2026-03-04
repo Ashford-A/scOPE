@@ -18,42 +18,42 @@
 
 scOPE proceeds in two phases:
 
-### 1) Learn latent factors from bulk RNA-seq and train mutation classifiers (Panels a–c)
+<ol>
+  <li><b>Learn latent factors from bulk RNA-seq and train mutation classifiers (Panels a–c)</b>
+    <ol type="i">
+      <li><b>Bulk expression matrix</b><br>
+        Construct a bulk cohort expression matrix <b>A_bulk</b> (rows = patient samples, columns = genes).<br>
+        The bulk matrix is <b>normalized / centered / scaled</b> to ensure comparable gene-wise signal.
+      </li>
 
- i. **Bulk expression matrix**  
-   Construct a bulk cohort expression matrix **A_bulk** (rows = patient samples, columns = genes).  
-   The bulk matrix is **normalized / centered / scaled** to ensure comparable gene-wise signal.
+      <li><b>Latent feature mapping via SVD</b><br>
+        Decompose the normalized bulk matrix using SVD:
+        <p align="center">…your picture/img equation…</p>
+      </li>
 
- ii. **Latent feature mapping via SVD**  
-   Decompose the normalized bulk matrix using SVD:
+      <li><b>Train mutation-prediction models in latent space</b><br>
+        For each mutation / gene-of-interest, train a supervised ML model to predict mutation presence <b>Y</b> from <b>Z_bulk</b>.
+      </li>
+    </ol>
+  </li>
 
-   <p align="center">
-     <picture>
-       <source media="(prefers-color-scheme: dark)"
-               srcset="https://latex.codecogs.com/svg.image?\color{white}{A_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}V^{\top}}">
-       <img src="https://latex.codecogs.com/svg.image?A_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}V^{\top}"
-            alt="A_bulk = U_bulk Σ_bulk V^T">
-     </picture>
-   </p>
+  <li><b>Project scRNA-seq into the bulk-derived latent space and predict mutations per cell (Panels d–f)</b>
+    <ol type="i">
+      <li><b>Single-cell expression matrix</b><br>
+        Construct a single-cell expression matrix <b>A_sc</b> (rows = single cells, columns = genes).
+      </li>
 
-   * **U_bulk**: sample scores (rows = patients, columns = latent factors)  
-   * **Σ_bulk**: diagonal matrix of singular values  
-   * **V**: gene loadings (rows = genes, columns = latent factors)
+      <li><b>Normalize scRNA-seq using bulk-derived parameters</b><br>
+        Apply the same gene-wise normalization / centering / scaling learned from the bulk cohort to obtain <b>A′_sc</b>.
+      </li>
 
-   Define the bulk latent representation (patient-by-factor embedding):
-
-   <p align="center">
-     <picture>
-       <source media="(prefers-color-scheme: dark)"
-               srcset="https://latex.codecogs.com/svg.image?\color{white}{Z_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}}">
-       <img src="https://latex.codecogs.com/svg.image?Z_{\text{bulk}}=U_{\text{bulk}}\Sigma_{\text{bulk}}"
-            alt="Z_bulk = U_bulk Σ_bulk">
-     </picture>
-   </p>
-
- iii. **Train mutation-prediction models in latent space**  
-   For each mutation / gene-of-interest, train a supervised ML model to predict mutation presence **Y** from **Z_bulk**.  
-   This yields one (or multiple) mutation-specific classifiers operating on the learned latent factors.
+      <li><b>Project cells into latent space and infer mutation probabilities</b><br>
+        Use the bulk-derived gene loadings <b>V</b> to compute:
+        <p align="center">…your picture/img equation…</p>
+      </li>
+    </ol>
+  </li>
+</ol>
 
 ---
 
