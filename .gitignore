@@ -49,7 +49,7 @@ data/**
 
 saved_models/
 /figures/
-/models/
+models/
 
 # allow versioned assets figures
 !assets/
