@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scope-bio"
-version = "0.1.0"
+version = "0.1.1"
 description = "scOPE: single-cell Oncological Prediction Explorer — transfer-learning from bulk RNA-seq to predict per-cell mutation probabilities in scRNA-seq."
 readme = "README.md"
 license = { text = "MIT" }
