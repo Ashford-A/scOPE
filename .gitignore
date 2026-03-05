@@ -72,4 +72,5 @@ staged-recipes/
 notebooks/models/
 notebooks/results/
 notebooks/**/*.pdf
+notebooks/notebook_outputs/
 
