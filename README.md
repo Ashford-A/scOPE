@@ -1,6 +1,6 @@
 # scOPE — single-cell Oncological Prediction Explorer
 
-[![PyPI version](https://img.shields.io/pypi/v/scope-bio?v=0.1.7)](https://pypi.org/project/scope-bio/)
+[![PyPI version](https://img.shields.io/pypi/v/scope-bio?v=0.1.8)](https://pypi.org/project/scope-bio/)
 [![pypi downloads](https://img.shields.io/pepy/dt/scope-bio?label=pypi%20downloads)](https://pepy.tech/project/scope-bio)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 
