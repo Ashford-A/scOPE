@@ -31,6 +31,14 @@ if not os.environ.get("DISPLAY") and os.name != "nt":
     matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from scipy import stats
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold, permutation_test_score
+from sklearn.pipeline import Pipeline
 
 from scope.decomposition.svd import SVDDecomposition
 from scope.evaluation.metrics import roc_curve_data
