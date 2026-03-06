@@ -11,12 +11,6 @@ recursive-include conda-recipe *.yaml *.yml
 # Environments
 recursive-include environments *.yml *.yaml
 
-# Example notebooks
-recursive-include notebooks *.ipynb
-
-# Assets (figures used by README)
-recursive-include assets *.png *.svg *.pdf
-
 # Tests
 recursive-include tests *.py
 include tests/conftest.py
@@ -29,3 +23,10 @@ global-exclude .DS_Store
 global-exclude *.h5ad
 global-exclude *.pkl
 global-exclude *.joblib
+
+# Exclude large directories that bloat the sdist
+prune notebooks
+prune assets
+prune data
+prune parameter_files
+prune scripts
