@@ -143,7 +143,7 @@ class SingleCellPipeline(BaseEstimator):
         2. Normalises and log-transforms sc expression.
         3. Subsets to the bulk gene universe.
         4. Aligns sc distribution to bulk.
-        5. Projects cells into the bulk latent space.
+        5. Projects cells into the bulk latent space (sparse-safe).
         6. Applies trained mutation classifiers to get per-cell probabilities.
         7. Writes probabilities to ``adata_sc.obs``.
 
@@ -167,7 +167,6 @@ class SingleCellPipeline(BaseEstimator):
         if hasattr(self, "sc_preprocessor_"):
             adata_pp = self.sc_preprocessor_.transform(adata_sc)
         else:
-            # Fast path: fit+transform in one shot
             sc_prep = SingleCellPreprocessor(
                 filter_strategy=self.sc_filter_strategy,
                 min_counts=self.sc_min_counts,
@@ -180,7 +179,7 @@ class SingleCellPipeline(BaseEstimator):
             )
             adata_pp = sc_prep.fit_transform(adata_sc)
 
-        # ── 2. Subset to shared genes and align ───────────────────────
+        # ── 2. Subset to shared genes (sparse-safe) ───────────────────
         bulk_genes = bp.gene_names_
         sc_genes = list(adata_pp.var_names)
         shared = [g for g in bulk_genes if g in set(sc_genes)]
@@ -192,15 +191,15 @@ class SingleCellPipeline(BaseEstimator):
                 len(bulk_genes),
             )
 
-        # Subset sc to shared genes in bulk order for alignment
-
         gene_idx = {g: i for i, g in enumerate(sc_genes)}
-        X_sc = adata_pp.X
-        if sp.issparse(X_sc):
-            X_sc = X_sc.toarray()
-
         shared_idx_sc = [gene_idx[g] for g in shared]
-        X_shared = X_sc[:, shared_idx_sc].astype(np.float32)
+
+        # Sparse column slice — never call .toarray() here
+        X_sc = adata_pp.X
+        X_shared = X_sc[:, shared_idx_sc]
+        if not sp.issparse(X_shared):
+            X_shared = sp.csr_matrix(X_shared)
+        X_shared = X_shared.astype(np.float32)
 
         adata_shared = ad.AnnData(X=X_shared)
         adata_shared.obs_names = list(adata_pp.obs_names)
@@ -211,18 +210,28 @@ class SingleCellPipeline(BaseEstimator):
         if hasattr(self, "aligner_"):
             adata_shared = self.aligner_.transform(adata_shared)
             X_shared = adata_shared.X
-            if sp.issparse(X_shared):
-                X_shared = X_shared.toarray()
+            if not sp.issparse(X_shared):
+                X_shared = sp.csr_matrix(X_shared)
 
-        # ── 4. Zero-pad to full bulk gene universe ────────────────────
-        X_aligned = np.zeros((adata_pp.n_obs, len(bulk_genes)), dtype=np.float32)
+        # ── 4. Zero-pad to full bulk gene universe (sparse COO) ───────
         shared_idx_bulk = [i for i, g in enumerate(bulk_genes) if g in set(shared)]
-        X_aligned[:, shared_idx_bulk] = X_shared
+        n_cells = adata_pp.n_obs
+        n_bulk = len(bulk_genes)
+
+        X_coo = X_shared.tocoo()
+        rows = X_coo.row
+        cols = np.array(shared_idx_bulk, dtype=np.intp)[X_coo.col]
+        data = X_coo.data
+
+        X_aligned = sp.csr_matrix(
+            (data, (rows, cols)), shape=(n_cells, n_bulk), dtype=np.float32
+        )
 
         adata_aligned = ad.AnnData(X=X_aligned)
         adata_aligned.obs_names = list(adata_pp.obs_names)
         adata_aligned.var_names = bulk_genes
         adata_aligned.obs = adata_pp.obs.copy()
+
         adata_emb = bp.decomposer_.transform(adata_aligned)
         Z_sc = adata_emb.obsm[bp.obsm_key_]
         log.info(
