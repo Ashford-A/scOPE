@@ -38,7 +38,6 @@ def get_decomposition(method: str, **kwargs) -> BaseDecomposition:
     method = method.lower()
     if method not in _REGISTRY:
         raise ValueError(
-            f"Unknown decomposition '{method}'. "
-            f"Choose from: {list(_REGISTRY)}"
+            f"Unknown decomposition '{method}'. " f"Choose from: {list(_REGISTRY)}"
         )
     return _REGISTRY[method](**kwargs)

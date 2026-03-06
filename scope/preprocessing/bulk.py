@@ -34,18 +34,21 @@ log = get_logger(__name__)
 # ---------------------------------------------------------------------------
 try:
     import importlib.util as _ilu
+
     _HAS_SCANPY = _ilu.find_spec("scanpy") is not None
 except Exception:
     _HAS_SCANPY = False
 
 try:
     from combat.pycombat import pycombat as _pycombat
+
     _HAS_COMBAT = True
 except ImportError:
     _HAS_COMBAT = False
 
 try:
     import harmonypy as _harmonypy
+
     _HAS_HARMONY = True
 except ImportError:
     _HAS_HARMONY = False
@@ -371,9 +374,7 @@ class BulkPreprocessor(BaseEstimator, TransformerMixin):
         # ── gene filtering (fit stores the kept gene mask) ──────────────
         gene_mask = self._build_gene_mask(adata)
         self._gene_mask_: np.ndarray = gene_mask
-        self._kept_genes_: list[str] = list(
-            np.array(adata.var_names)[gene_mask]
-        )
+        self._kept_genes_: list[str] = list(np.array(adata.var_names)[gene_mask])
         adata = adata[:, gene_mask].copy()
 
         # ── normalisation ───────────────────────────────────────────────
@@ -499,6 +500,7 @@ class BulkPreprocessor(BaseEstimator, TransformerMixin):
                 log.warning("pycombat not installed (pip install combat). Skipping.")
                 return adata
             import pandas as pd
+
             X = self._raw_X(adata)
             batch = adata.obs[self.batch_key].values
             df = pd.DataFrame(X.T, index=list(adata.var_names))
@@ -529,6 +531,7 @@ class BulkPreprocessor(BaseEstimator, TransformerMixin):
             return mask
 
         import scanpy as sc
+
         adata_tmp = adata.copy()
         sc.pp.highly_variable_genes(
             adata_tmp, n_top_genes=self.n_hvg, flavor=self.hvg_flavor

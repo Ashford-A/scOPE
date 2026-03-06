@@ -104,11 +104,15 @@ class ConsensusNMFDecomposition(BaseDecomposition):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 nmf.fit(X)
-            all_H.append(nmf.components_)   # (k, n_genes)
+            all_H.append(nmf.components_)  # (k, n_genes)
 
         # Stack → (n_iter * k, n_genes) and cluster into k consensus programs
         H_stack = np.vstack(all_H)
-        log.info("cNMF: clustering %d component vectors → %d consensus programs.", H_stack.shape[0], self.n_components)
+        log.info(
+            "cNMF: clustering %d component vectors → %d consensus programs.",
+            H_stack.shape[0],
+            self.n_components,
+        )
         km = KMeans(
             n_clusters=self.n_components,
             random_state=self.random_state,
@@ -132,7 +136,7 @@ class ConsensusNMFDecomposition(BaseDecomposition):
 
         # Overwrite H with consensus (fit_transform may update H slightly)
         self._final_nmf.components_ = H_consensus
-        self.components_ = H_consensus   # (k, n_genes)
+        self.components_ = H_consensus  # (k, n_genes)
         self.n_components_ = self.n_components
 
         log.info(

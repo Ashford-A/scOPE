@@ -83,8 +83,7 @@ class FactorAnalysisDecomposition(BaseDecomposition):
         self.noise_variance_ = self._model.noise_variance_  # (n_genes,)
         self.n_components_ = self.n_components
         log.info(
-            "FactorAnalysis fitted: %d components.  "
-            "Mean noise var = %.4f.",
+            "FactorAnalysis fitted: %d components.  " "Mean noise var = %.4f.",
             self.n_components,
             float(self.noise_variance_.mean()),
         )
@@ -92,7 +91,7 @@ class FactorAnalysisDecomposition(BaseDecomposition):
 
     def transform(self, adata: AnnData, y=None) -> AnnData:
         X = self._get_X(adata)
-        Z = self._model.transform(X)   # posterior mean
+        Z = self._model.transform(X)  # posterior mean
         adata = adata.copy()
         adata.obsm[self.obsm_key] = Z.astype(np.float32)
         return adata

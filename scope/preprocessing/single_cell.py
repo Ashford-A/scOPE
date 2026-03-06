@@ -33,6 +33,7 @@ FilterStrategy = Literal["min_counts", "min_genes", "both", "none"]
 # Optional deps -----------------------------------------------------------
 try:
     import scrublet as _scrublet
+
     _HAS_SCRUBLET = True
 except ImportError:
     _HAS_SCRUBLET = False
@@ -201,9 +202,7 @@ class SingleCellPreprocessor(BaseEstimator, TransformerMixin):
     def _annotate_mito(self, adata: AnnData) -> AnnData:
         """Add pct_mito column to adata.obs (non-destructive copy)."""
         X = self._get_X(adata)
-        mito_mask = np.array(
-            [g.upper().startswith("MT-") for g in adata.var_names]
-        )
+        mito_mask = np.array([g.upper().startswith("MT-") for g in adata.var_names])
         if mito_mask.sum() == 0:
             log.debug("No MT- genes found in var_names — skipping mito annotation.")
             return adata
@@ -255,9 +254,7 @@ class SingleCellPreprocessor(BaseEstimator, TransformerMixin):
         X = self._get_X(adata)
         try:
             scrub = _scrublet.Scrublet(X)
-            scores, predicted = scrub.scrub_doublets(
-                threshold=self.doublet_threshold
-            )
+            scores, predicted = scrub.scrub_doublets(threshold=self.doublet_threshold)
         except Exception as exc:
             log.warning("Scrublet failed (%s) — skipping doublet removal.", exc)
             return adata

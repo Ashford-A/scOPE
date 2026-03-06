@@ -46,18 +46,21 @@ log = get_logger(__name__)
 # Optional deps -----------------------------------------------------------
 try:
     import shap as _shap_lib
+
     _HAS_SHAP = True
 except ImportError:
     _HAS_SHAP = False
 
 try:
     import umap as _umap_lib
+
     _HAS_UMAP = True
 except ImportError:
     _HAS_UMAP = False
 
 try:
     from statsmodels.stats.multitest import multipletests
+
     _HAS_STATSMODELS = True
 except ImportError:
     _HAS_STATSMODELS = False
@@ -119,9 +122,7 @@ class SVDEvaluator:
         self.mutation = mutation
 
         # Ground-truth labels
-        self.y: np.ndarray = (
-            bulk_pipeline.mutation_labels_[mutation].values.astype(int)
-        )
+        self.y: np.ndarray = bulk_pipeline.mutation_labels_[mutation].values.astype(int)
         # Gene names and loadings
         self.gene_names: list[str] = bulk_pipeline.gene_names_
         # V: (n_genes, k)
@@ -134,9 +135,9 @@ class SVDEvaluator:
         # The stored object may be a raw estimator or a sklearn Pipeline.
         clf_obj = bulk_pipeline.classifier_set_.classifiers_[mutation]
         self._clf = clf_obj
-        coef_raw = self._extract_coef(clf_obj)   # (1, k) or (k,)
+        coef_raw = self._extract_coef(clf_obj)  # (1, k) or (k,)
         self.coef_abs: np.ndarray = np.abs(coef_raw).mean(axis=0)  # (k,)
-        self.importance: np.ndarray = self.coef_abs * self.Sigma    # weighted
+        self.importance: np.ndarray = self.coef_abs * self.Sigma  # weighted
 
     # ------------------------------------------------------------------
     # Helpers
@@ -229,9 +230,7 @@ class SVDEvaluator:
         for thresh in [80, 90]:
             ax2.axhline(thresh, color="lightgrey", ls=":", lw=1)
 
-        sm = plt.cm.ScalarMappable(
-            cmap=cmap, norm=plt.Normalize(0, imp.max())
-        )
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(0, imp.max()))
         sm.set_array([])
         plt.colorbar(sm, ax=ax1, label=f"|coef|×σ  ({self.mutation})")
         ax1.set_title(
@@ -258,9 +257,7 @@ class SVDEvaluator:
         x = np.arange(top_k)
         ax_r.bar(x, self.coef_abs[order][::-1], label="|LR coef|", color=_PAL[1])
         sigma_norm = self.Sigma[order] / (self.Sigma.max() + 1e-12)
-        ax_r.bar(
-            x, sigma_norm[::-1], alpha=0.45, label="σ (norm.)", color=_PAL[2]
-        )
+        ax_r.bar(x, sigma_norm[::-1], alpha=0.45, label="σ (norm.)", color=_PAL[2])
         ax_r.set_xticks(x)
         ax_r.set_xticklabels(labels[::-1], rotation=45, ha="right")
         ax_r.set_title("Raw |coef| vs σ")
@@ -290,7 +287,7 @@ class SVDEvaluator:
         genes = list(gene_set)
         g_idx = [self.gene_names.index(g) for g in genes]
 
-        mat = self.V[np.ix_(g_idx, order)]           # (genes_sub, top_k)
+        mat = self.V[np.ix_(g_idx, order)]  # (genes_sub, top_k)
         linkage = sch.linkage(mat, method="ward")
         row_order = sch.leaves_list(linkage)
         mat = mat[row_order]
@@ -339,9 +336,7 @@ class SVDEvaluator:
         for ax_i, ci in enumerate(order):
             df = self._top_genes(ci, n=top_genes)
             colours = ["#e74c3c" if v > 0 else "#3498db" for v in df["loading"]]
-            axes[ax_i].barh(
-                df["gene"][::-1], df["loading"][::-1], color=colours[::-1]
-            )
+            axes[ax_i].barh(df["gene"][::-1], df["loading"][::-1], color=colours[::-1])
             axes[ax_i].axvline(0, color="black", lw=0.7)
             axes[ax_i].set_title(
                 f"SVD{ci + 1}  imp={self.importance[ci]:.3g}", fontsize=9
@@ -351,9 +346,7 @@ class SVDEvaluator:
         for ax_i in range(top_components, len(axes)):
             axes[ax_i].set_visible(False)
 
-        fig.suptitle(
-            f"Top gene loadings per component  ({self.mutation})", y=1.01
-        )
+        fig.suptitle(f"Top gene loadings per component  ({self.mutation})", y=1.01)
         plt.tight_layout()
         self._savefig(fig, "top_genes_per_component.png", output_dir)
 
@@ -414,9 +407,7 @@ class SVDEvaluator:
 
         for ax_i, ci in enumerate(order):
             groups = [self.Z_bulk[self.y == cls, ci] for cls in classes]
-            parts = axes[ax_i].violinplot(
-                groups, showmedians=True, showextrema=False
-            )
+            parts = axes[ax_i].violinplot(groups, showmedians=True, showextrema=False)
             for pc, col in zip(parts["bodies"], _PAL):
                 pc.set_facecolor(col)
                 pc.set_alpha(0.72)
@@ -435,9 +426,7 @@ class SVDEvaluator:
         for ax_i in range(top_components, len(axes)):
             axes[ax_i].set_visible(False)
 
-        fig.suptitle(
-            f"Component score distributions by {self.mutation} status", y=1.01
-        )
+        fig.suptitle(f"Component score distributions by {self.mutation} status", y=1.01)
         plt.tight_layout()
         self._savefig(fig, "separation_violins.png", output_dir)
 
@@ -469,7 +458,10 @@ class SVDEvaluator:
 
         annot = np.array(
             [
-                [f"{rho_mat[r, c]:.2f}\n(q={q_mat[r, c]:.2f})" for c in range(len(classes))]
+                [
+                    f"{rho_mat[r, c]:.2f}\n(q={q_mat[r, c]:.2f})"
+                    for c in range(len(classes))
+                ]
                 for r in range(k)
             ]
         )
@@ -506,9 +498,7 @@ class SVDEvaluator:
 
         # ---- ablation
         step = max(1, self.k // n_ablation_steps)
-        keep_sizes = sorted(
-            set(list(range(1, self.k + 1, step)) + [self.k])
-        )
+        keep_sizes = sorted(set(list(range(1, self.k + 1, step)) + [self.k]))
         abl_aucs, abl_n = [], []
         for n_keep in keep_sizes:
             Z_sub = self.Z_bulk[:, order[:n_keep]]
@@ -520,7 +510,9 @@ class SVDEvaluator:
                 p = clf.predict_proba(Z_sub[te])
                 with contextlib.suppress(Exception):
                     fold_aucs.append(
-                        roc_auc_score(self.y[te], p[:, 1] if p.shape[1] == 2 else p.max(1))
+                        roc_auc_score(
+                            self.y[te], p[:, 1] if p.shape[1] == 2 else p.max(1)
+                        )
                     )
             abl_aucs.append(float(np.nanmean(fold_aucs)) if fold_aucs else np.nan)
             abl_n.append(n_keep)
@@ -565,10 +557,19 @@ class SVDEvaluator:
             n_jobs=-1,
         )
         fig, ax = plt.subplots(figsize=(7, 4))
-        ax.hist(perm_scores, bins=30, color=_PAL[2], alpha=0.75,
-                label=f"Permuted (n={n_permutations})")
-        ax.axvline(score, color="red", lw=2,
-                   label=f"Observed AUROC = {score:.3f}  (p = {pvalue:.4f})")
+        ax.hist(
+            perm_scores,
+            bins=30,
+            color=_PAL[2],
+            alpha=0.75,
+            label=f"Permuted (n={n_permutations})",
+        )
+        ax.axvline(
+            score,
+            color="red",
+            lw=2,
+            label=f"Observed AUROC = {score:.3f}  (p = {pvalue:.4f})",
+        )
         ax.set_xlabel("AUROC (permuted labels)")
         ax.set_ylabel("Count")
         ax.set_title(f"Permutation test  ({self.mutation})")
@@ -589,8 +590,12 @@ class SVDEvaluator:
         for cls, col in zip(classes, _PAL):
             m = self.y == cls
             ax.scatter(
-                self.Z_bulk[m, c1], self.Z_bulk[m, c2],
-                c=[col], alpha=0.65, s=32, edgecolors="none",
+                self.Z_bulk[m, c1],
+                self.Z_bulk[m, c2],
+                c=[col],
+                alpha=0.65,
+                s=32,
+                edgecolors="none",
                 label=f"{self.mutation}={cls}",
             )
 
@@ -609,8 +614,14 @@ class SVDEvaluator:
                 xytext=(0, 0),
                 arrowprops={"arrowstyle": "->", "color": "grey", "lw": 0.7},
             )
-            ax.text(vx * 1.06, vy * 1.06, self.gene_names[i],
-                    fontsize=7, color="dimgray", ha="center")
+            ax.text(
+                vx * 1.06,
+                vy * 1.06,
+                self.gene_names[i],
+                fontsize=7,
+                color="dimgray",
+                ha="center",
+            )
 
         ax.set_xlabel(f"Z  SVD{c1 + 1}")
         ax.set_ylabel(f"Z  SVD{c2 + 1}")
@@ -666,8 +677,15 @@ class SVDEvaluator:
         fig, ax = plt.subplots(figsize=(7, 6))
         for cls, col in zip(np.unique(self.y), _PAL):
             m = self.y == cls
-            ax.scatter(emb[m, 0], emb[m, 1], c=[col], s=30, alpha=0.7,
-                       edgecolors="none", label=f"{self.mutation}={cls}")
+            ax.scatter(
+                emb[m, 0],
+                emb[m, 1],
+                c=[col],
+                s=30,
+                alpha=0.7,
+                edgecolors="none",
+                label=f"{self.mutation}={cls}",
+            )
         ax.set_xlabel("UMAP-1")
         ax.set_ylabel("UMAP-2")
         ax.set_title(f"UMAP of Z_bulk  ({self.mutation})")
@@ -759,7 +777,9 @@ class SVDEvaluator:
                         "gene": row["gene"],
                         "loading": float(row["loading"]),
                         "loading_abs": float(abs(row["loading"])),
-                        "loading_direction": "positive" if row["loading"] > 0 else "negative",
+                        "loading_direction": (
+                            "positive" if row["loading"] > 0 else "negative"
+                        ),
                     }
                 )
         out_df = pd.DataFrame(rows)
@@ -781,7 +801,9 @@ class SVDEvaluator:
     ) -> None:
         """Run every evaluation and save all outputs to *output_dir*."""
         out = Path(output_dir)
-        log.info("=== SVDEvaluator running for mutation '%s' → %s ===", self.mutation, out)
+        log.info(
+            "=== SVDEvaluator running for mutation '%s' → %s ===", self.mutation, out
+        )
 
         self.plot_weighted_scree(out)
         self.plot_component_importance(out)
