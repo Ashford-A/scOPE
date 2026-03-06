@@ -227,7 +227,7 @@ class SingleCellPipeline(BaseEstimator):
             (data, (rows, cols)), shape=(n_cells, n_bulk), dtype=np.float32
         )
 
-        adata_aligned = ad.AnnData(X=X_aligned)
+        adata_aligned = ad.AnnData(X=X_aligned.toarray())
         adata_aligned.obs_names = list(adata_pp.obs_names)
         adata_aligned.var_names = bulk_genes
         adata_aligned.obs = adata_pp.obs.copy()
