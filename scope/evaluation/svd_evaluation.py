@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import contextlib
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -38,8 +39,10 @@ matplotlib.use("Agg")
 
 from scope.decomposition.svd import SVDDecomposition
 from scope.evaluation.metrics import roc_curve_data
-from scope.pipeline.bulk_pipeline import BulkPipeline
 from scope.utils.logging import get_logger
+
+if TYPE_CHECKING:
+    from scope.pipeline.bulk_pipeline import BulkPipeline
 
 log = get_logger(__name__)
 
